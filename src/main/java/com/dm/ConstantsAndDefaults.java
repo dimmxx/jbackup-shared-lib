@@ -3,6 +3,8 @@ package com.dm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+
 import static java.lang.String.format;
 import static java.nio.file.Files.notExists;
 import static java.nio.file.Path.of;
@@ -11,6 +13,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 public class ConstantsAndDefaults {
 
     public static final String NL = "\n";
+    public static String SPTR = File.separator;
     public static final String BACKUP_TAG = "Backup";
     public static final String SKIP_TAG = "Skip";
     public static final String BACKUP_DIR = ".jbackup";
