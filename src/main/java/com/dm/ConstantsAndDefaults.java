@@ -12,34 +12,61 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 public class ConstantsAndDefaults {
 
-    public static final String NL = "\n";
-    public static String SPTR = File.separator;
-    public static final String BACKUP_TAG = "Backup";
-    public static final String SKIP_TAG = "Skip";
-    public static final String BACKUP_DIR = ".jbackup";
-    public static final String[] BASE_COMMAND = {"/bin/zsh", "-c"};
-    public static final String[] TAG_BACKUP_ROOT = {BASE_COMMAND[0], BASE_COMMAND[1], format("tag -A -m %s", BACKUP_TAG)};
-    public static final String[] TAG_SKIP_ROOT = {BASE_COMMAND[0], BASE_COMMAND[1], format("tag -A -m %s", SKIP_TAG)};
-    public static final String[] TAG_BACKUP_RECURSIVE = {BASE_COMMAND[0], BASE_COMMAND[1], format("tag -A -R -m %s", BACKUP_TAG)};
-    public static final String ADD_TAGS = "tag --add %s %s";
-    public static final String HOME_DIR;
-    public static final String TEMP_DIR;
-    public static final String FILE_NAME = "paths.txt";
+    //Paths
+    public static final String DEFAULT_HOME_DIR;
+    public static String WORK_DIR;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConstantsAndDefaults.class);
+    public static final String APP_DIR = ".jbackup";
+    public static final String ABSOLUTE_APP_DIR;
+
+    public static final String TEMP_DIR;
+    public static final String OUTPUT_FILE_NAME = "paths.txt";
+    public static final String ARCHIVE_FILE_NAME = "jbackup-";
+    public static final String ARCHIVE_FILE_EXTENSION = "zip";
+
     private static final String ENV_TEMP_DIR = "java.io.tmpdir";
     private static final String ENV_HOME_DIR = "HOME";
+    public static final String NL = "\n";
+    public static final String SPTR = File.separator;
+
+    //Tags
+    public static final String DEFAULT_BACKUP_TAG = "Backup";
+    public static String BACKUP_TAG;
+    public static final String SKIP_TAG = "Skip";
+
+    //Commands
+    public static final String[] BASE_COMMAND = {"/bin/zsh", "-c"};
+    public static final String ADD_TAGS = "tag --add %s %s";
+
+    private static final Logger log = LoggerFactory.getLogger(ConstantsAndDefaults.class);
 
     static {
-        HOME_DIR = System.getenv(ENV_HOME_DIR);
+        DEFAULT_HOME_DIR = System.getenv(ENV_HOME_DIR);
         TEMP_DIR = System.getProperty(ENV_TEMP_DIR);
 
-        if (isEmpty(HOME_DIR) || notExists(of(HOME_DIR))) {
-            LOGGER.error("Failed to obtain USER HOME directory [{}] from the environment, "
-                + "it is not set or does not exist. Terminating the application.", HOME_DIR);
+        if (isEmpty(DEFAULT_HOME_DIR) || notExists(of(DEFAULT_HOME_DIR))) {
+            log.error("Failed to obtain USER HOME directory [{}] from the environment, "
+                + "it is not set or does not exist. Terminating the application.", DEFAULT_HOME_DIR);
             System.exit(1);
         }
-        LOGGER.info("USER HOME directory [{}] and JAVA TMPDIR [{}] path variables have been obtained"
-            + " from the environment", HOME_DIR, TEMP_DIR);
+
+        ABSOLUTE_APP_DIR = DEFAULT_HOME_DIR.concat(SPTR).concat(APP_DIR);
+        WORK_DIR = DEFAULT_HOME_DIR;
+        BACKUP_TAG = DEFAULT_BACKUP_TAG;
+
+        log.info("USER HOME directory [{}] and JAVA TMPDIR [{}] path variables have been obtained"
+            + " from the environment", DEFAULT_HOME_DIR, TEMP_DIR);
+    }
+
+    public static String[] getRootBackupTag(){
+        return new String[]{BASE_COMMAND[0], BASE_COMMAND[1], String.format("tag -A -m %s", BACKUP_TAG)};
+    }
+
+    public static String[] getRecursiveBackupTag(){
+        return new String[]{BASE_COMMAND[0], BASE_COMMAND[1], format("tag -A -R -m %s", BACKUP_TAG)};
+    }
+
+    public static String[] getRootSkipTag(){
+        return new String[]{BASE_COMMAND[0], BASE_COMMAND[1], format("tag -A -m %s", SKIP_TAG)};
     }
 }
